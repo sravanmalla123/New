@@ -3,7 +3,11 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, 'adarshgram.db');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'adarshgram.db');
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
 let sqlDb = null;
 let dbWrapper = null;
 let saveTimer = null;

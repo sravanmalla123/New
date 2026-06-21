@@ -113,7 +113,8 @@ router.delete('/:id', authMiddleware, requireRole('super_admin'), (req, res) => 
   if (!image) return res.status(404).json({ error: 'Image not found' });
 
   // Delete file if it exists
-  const filePath = path.join(__dirname, '..', 'uploads', image.filename);
+  const uploadDir = process.env.UPLOADS_PATH || path.join(__dirname, '..', 'uploads');
+  const filePath = path.join(uploadDir, image.filename);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
   db.prepare('DELETE FROM gallery_images WHERE id = ?').run(req.params.id);
