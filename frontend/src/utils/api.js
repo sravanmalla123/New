@@ -21,9 +21,18 @@ async function request(method, path, body = null, isFormData = false) {
     options.body = isFormData ? body : JSON.stringify(body);
   }
   const res = await fetch(`${BASE_URL}${path}`, options);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `Request failed: ${res.status}`);
-  return data;
+  
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Request failed: ${res.status}`);
+  }
+
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error('Server returned a non-JSON response');
+  }
+
+  return await res.json();
 }
 
 export const api = {
